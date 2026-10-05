@@ -1,8 +1,15 @@
 import { create } from "zustand";
 import { PantryIngredient, PantryUpdateFormData } from "@/utils/interfaces";
+import {
+  CollectionLoadState,
+  fetchCollection,
+  loadStateFromServer,
+  nextLoadStateForFetch,
+} from "@/stores/collection-load";
 
 export type PantryState = {
   pantryIngredients: PantryIngredient[];
+  pantryLoadState: CollectionLoadState;
   isPantryOpen: boolean;
   pantryVersion: number;
 };
@@ -21,8 +28,10 @@ export type PantryStore = PantryState & PantryActions;
 
 export const initPantryStore = (
   pantryIngredients?: PantryIngredient[] | null,
+  pantryServerLoaded = false,
 ): PantryState => ({
   pantryIngredients: pantryIngredients ?? [],
+  pantryLoadState: loadStateFromServer(pantryServerLoaded),
   isPantryOpen: false,
   pantryVersion: 1,
 });
@@ -52,13 +61,25 @@ export const createPantryStore = (initialState: PantryState) => {
     setPantryOpen: (isPantryOpen) => set({ isPantryOpen }),
     setPantryIngredients: (pantryIngredients) => set({ pantryIngredients }),
     fetchPantry: async () => {
+      let shouldFetch = false;
+      set(({ pantryLoadState }) => {
+        const next = nextLoadStateForFetch(pantryLoadState);
+        if (!next.shouldFetch) return {};
+        shouldFetch = true;
+        return { pantryLoadState: next.loadState };
+      });
+      if (!shouldFetch) return;
+
       try {
-        const { pantryIngredients } = await tryFetchingPantry();
-        set(() => ({ pantryIngredients }));
+        const pantryIngredients = await fetchCollection<PantryIngredient>(
+          "/api/pantry",
+          "pantryIngredients",
+          "Pantry",
+        );
+        set({ pantryIngredients, pantryLoadState: "loaded" });
       } catch (error) {
-        throw new Error("Unable to fetch pantry", {
-          cause: error,
-        });
+        console.error("Unable to fetch pantry", error);
+        set({ pantryLoadState: "error" });
       }
     },
     syncPantry: async (pantryFormData) => {
@@ -70,17 +91,6 @@ export const createPantryStore = (initialState: PantryState) => {
       }
     },
   }));
-};
-
-// TODO: why was this using /api/grocery-list instead of /api/pantry
-const tryFetchingPantry = async () => {
-  try {
-    const fetchPantry = await fetch("/api/pantry");
-    // const fetchPantry = await fetch("/api/grocery-list");
-    return await fetchPantry.json();
-  } catch (error) {
-    throw new Error("Unable to fetch grocery lists", { cause: error });
-  }
 };
 
 const trySyncingPantry = async (pantryFormData: PantryUpdateFormData) => {

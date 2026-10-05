@@ -53,6 +53,7 @@ export const Providers = async ({ children }: PropsWithChildren) => {
   });
 
   const pantryIngredients = fetchedPantryIngredients ?? [];
+  const pantryServerLoaded = fetchedPantryIngredients !== null;
 
   return (
     <UserStoreProvider userInfo={userInfo}>
@@ -68,7 +69,10 @@ export const Providers = async ({ children }: PropsWithChildren) => {
             recipes={recipes}
             recipesServerLoaded={recipesServerLoaded}
           >
-            <PantryStoreProvider pantryIngredients={pantryIngredients}>
+            <PantryStoreProvider
+              pantryIngredients={pantryIngredients}
+              pantryServerLoaded={pantryServerLoaded}
+            >
               <RouteDataFallback />
               {children}
             </PantryStoreProvider>

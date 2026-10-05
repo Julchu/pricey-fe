@@ -7,6 +7,7 @@ import { useGroceryListsStore } from "@/providers/grocery-list-store-provider";
 import { useRecipesStore } from "@/providers/recipe-store-provider";
 import { useShallow } from "zustand/react/shallow";
 import { useUserStore } from "@/providers/user-store-provider";
+import { usePantryStore } from "@/providers/pantry-store-provider";
 
 export const RouteDataFallback = () => {
   const pathname = usePathname();
@@ -30,10 +31,20 @@ export const RouteDataFallback = () => {
       fetchRecipes,
     ]),
   );
+  const [pantryLoadState, fetchPantry] = usePantryStore(
+    useShallow(({ pantryLoadState, fetchPantry }) => [
+      pantryLoadState,
+      fetchPantry,
+    ]),
+  );
 
   useEffect(() => {
     // Early return if user is not authenticated
     if (!userInfo) return;
+
+    if (pantryLoadState === "idle") {
+      void fetchPantry();
+    }
 
     // Idle means this collection has not been loaded yet.
     if (pathname === "/" || pathname.includes("/ingredients")) {
@@ -59,9 +70,11 @@ export const RouteDataFallback = () => {
     ingredientsLoadState,
     groceryListsLoadState,
     recipesLoadState,
+    pantryLoadState,
     fetchIngredients,
     fetchGroceryLists,
     fetchRecipes,
+    fetchPantry,
   ]);
 
   return null;
