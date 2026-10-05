@@ -181,7 +181,7 @@ export const UserMenu = () => {
           <Menu.Group>
             <Menu.Separator className={"m-1 h-px bg-gray-200"} />
             <Menu.GroupLabel className="pl-4 text-xs leading-6 font-medium opacity-50">
-              Profile
+              Account
             </Menu.GroupLabel>
 
             <Menu.Item

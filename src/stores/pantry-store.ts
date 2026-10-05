@@ -42,6 +42,7 @@ export const createPantryStore = (initialState: PantryState) => {
           pantryIngredients,
         ),
       })),
+    // TODO: verify if needed
     removeItemFromPantry: (name) =>
       set(({ pantryIngredients }) => ({
         pantryIngredients: pantryIngredients.filter(
@@ -71,9 +72,11 @@ export const createPantryStore = (initialState: PantryState) => {
   }));
 };
 
+// TODO: why was this using /api/grocery-list instead of /api/pantry
 const tryFetchingPantry = async () => {
   try {
-    const fetchPantry = await fetch("/api/grocery-list");
+    const fetchPantry = await fetch("/api/pantry");
+    // const fetchPantry = await fetch("/api/grocery-list");
     return await fetchPantry.json();
   } catch (error) {
     throw new Error("Unable to fetch grocery lists", { cause: error });
@@ -82,7 +85,8 @@ const tryFetchingPantry = async () => {
 
 const trySyncingPantry = async (pantryFormData: PantryUpdateFormData) => {
   try {
-    const fetchPantry = await fetch("/api/grocery-list", {
+    const fetchPantry = await fetch("/api/pantry", {
+      // const fetchPantry = await fetch("/api/grocery-list", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(pantryFormData),
