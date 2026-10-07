@@ -1,6 +1,6 @@
 import { Drawer } from "@base-ui/react/drawer";
 import { PantryForm } from "@/components/pantry/pantry-form";
-import { CircleAddIcon } from "@/components/icons/circle-close-icon";
+import { CircleCloseIcon } from "@/components/icons/circle-close-icon";
 
 export const PantryContent = () => {
   // // const { formState } = useFormContext();
@@ -23,7 +23,7 @@ export const PantryContent = () => {
                 "flex cursor-pointer rounded-md bg-blue-500 px-4 py-2 text-xl font-bold tracking-widest text-white group-hover:bg-red-500"
               }
             >
-              <CircleAddIcon className={"fill-none stroke-white"} />
+              <CircleCloseIcon className={"fill-none stroke-white"} />
             </Drawer.Close>
           </div>
         </Drawer.Title>
