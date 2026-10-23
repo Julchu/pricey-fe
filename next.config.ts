@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   logging: {
     browserToTerminal: isDevelopmentEnv,
   },
+  // TODO: update ngrok when testing live
+  allowedDevOrigins: ["6806-99-230-235-168.ngrok-free.app"],
   images: {
     dangerouslyAllowLocalIP: isDevelopmentEnv,
     remotePatterns: [
