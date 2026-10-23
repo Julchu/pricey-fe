@@ -43,11 +43,13 @@ export const createUserStore = (initialState: UserState = defaultInitState) => {
     setMass: (massType) => set({ mass: massType }),
     setLiquidVolume: (liquidType) => set({ liquidVolume: liquidType }),
 
+    // TODO: Reset all active user stores on logout, including when the request fails.
     logout: async () => {
       try {
         const { userInfo } = await tryLogout();
         const { mass, liquidVolume } = initUserStore(userInfo);
         set(() => ({ userInfo, mass, liquidVolume }));
+        // TODO: Reset the provider's active ingredient store; this creates a separate store.
         createIngredientsStore().setState({ ingredients: [] });
       } catch (error) {
         throw new Error("Unable to logout", { cause: error });

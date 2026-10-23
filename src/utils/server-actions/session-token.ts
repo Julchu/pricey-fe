@@ -13,20 +13,20 @@ export const sessionCookieClearOptions = () => ({
 });
 
 /**
- * Prefer the real session cookie. MASTER_KEY is only a development fallback
- * when no session cookie is present, and never outside development.
+ * A configured MASTER_KEY overrides the session for development/staging testing.
+ * Production always uses the real session cookie.
  */
 export const getAccessToken = async () => {
-  const key = process.env.ACCESS_TOKEN_KEY;
-  const jar = await cookies();
-  const session = key ? jar.get(key)?.value : undefined;
-  if (session) return session;
-
-  if (process.env.NODE_ENV === "development" && process.env.MASTER_KEY) {
+  if (
+    ["development", "staging"].includes(process.env.NODE_ENV ?? "") &&
+    process.env.MASTER_KEY
+  ) {
     return process.env.MASTER_KEY;
   }
 
-  return undefined;
+  const key = process.env.ACCESS_TOKEN_KEY;
+  const jar = await cookies();
+  return key ? jar.get(key)?.value : undefined;
 };
 
 export const getRefreshToken = async () => {

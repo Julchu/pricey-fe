@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { cookies } from "next/headers";
+import { getAccessToken } from "@/utils/server-actions/session-token";
 import { IngredientFormData } from "@/utils/interfaces";
 
 export const PATCH = async (
@@ -7,10 +7,7 @@ export const PATCH = async (
   { params }: { params: Promise<{ "ingredient-id": string }> },
 ) => {
   try {
-    const browserCookies = await cookies();
-    const token =
-      process.env.MASTER_KEY ||
-      browserCookies.get(`${process.env.ACCESS_TOKEN_KEY}`)?.value;
+    const token = await getAccessToken();
 
     if (!token)
       return new Response(JSON.stringify({ ingredient: null }), {
@@ -46,10 +43,7 @@ export const POST = async (
   { params }: { params: Promise<{ "ingredient-id": string }> },
 ) => {
   try {
-    const browserCookies = await cookies();
-    const token =
-      process.env.MASTER_KEY ||
-      browserCookies.get(`${process.env.ACCESS_TOKEN_KEY}`)?.value;
+    const token = await getAccessToken();
 
     if (!token)
       return new Response(JSON.stringify({ ingredient: null }), {
@@ -87,10 +81,7 @@ export const DELETE = async (
   { params }: { params: Promise<{ "ingredient-id": string }> },
 ) => {
   try {
-    const browserCookies = await cookies();
-    const token =
-      process.env.MASTER_KEY ||
-      browserCookies.get(`${process.env.ACCESS_TOKEN_KEY}`)?.value;
+    const token = await getAccessToken();
 
     if (!token)
       return new Response(JSON.stringify({ ingredientId: null }), {
